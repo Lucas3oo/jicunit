@@ -3,7 +3,7 @@ jicunit
 
 JICUnit is a Java testing framework for JEE in-container testing. JICUnit is inspired by JUnitEE and Jakarta Cactus, both which are not developed any more.
 
-In short the JUnit tests are package in a test WAR and deployed to the JEE container. 
+In short the JUnit tests are packaged in a test WAR and deployed to the JEE container. 
 
 JICUnit has a JUnit test runner in the container just like JUnitEE and Cactus. It also has a Maven plugin that generates additional files which must be included in the test WAR. And finally it has an Eclipse plugin which makes it possible to run the tests from Eclipse just like a unit test, but the tests are executed in the container. 
 
