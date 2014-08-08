@@ -10,3 +10,4 @@ For more information, please visit:
 * [Wiki](https://github.com/Lucas3oo/jicunit/wiki)
 * [Download and Install guide](https://github.com/Lucas3oo/jicunit/wiki/Download-and-Install)
 * [Getting Started](https://github.com/Lucas3oo/jicunit/wiki/Getting-started)
+* [JavaDoc](http://lucas3oo.github.io/jicunit/)
