@@ -12,6 +12,27 @@
     such as a list of tests cases to present in the Web bases JUnit runner.
   </description>
   <packaging>maven-plugin</packaging>
+  <url>https://github.com/Lucas3oo/jicunit</url>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://github.com/Lucas3oo/jicunit/blob/master/LICENSE.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>https://github.com/Lucas3oo/jicunit</url>
+    <connection>https://github.com/Lucas3oo/jicunit.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>lucas3oo</id>
+      <name>Lucas Persson</name>
+      <email>jicunit.org@gmail.com</email>
+      <organization>jicunit.org</organization>
+      <organizationUrl>http://jicunit.org</organizationUrl>
+    </developer>
+  </developers>
 
 
   <properties>
@@ -60,10 +81,19 @@
           </execution>
         </executions>
       </plugin>
-
-
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
- 
   </build>
 
   <dependencies>
