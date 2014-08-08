@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            label="JICUnit Test (in container)"
+            icon="icons/julaunch.gif"
+            helpContextId="org.jicunit.eclipse.launch.JUnitInContainerLaunchShortcut"
+            class="org.jicunit.eclipse.launch.JUnitInContainerLaunchShortcut"
+            modes="run"
+            id="org.jicunit.eclipse.launch.JUnitInContainerLaunchShortcut">
+         <contextualLaunch>
+            <enablement>
+               <with variable="selection">
+                  <count value="1"/>
+                  <iterate>
+                     <adapt type="org.eclipse.jdt.core.IJavaElement">
+                                <test property="org.eclipse.jdt.core.isInJavaProject"/>
+                                <test property="org.eclipse.jdt.core.hasTypeOnClasspath" value="junit.framework.Test"/>
+                                <test property="org.eclipse.jdt.junit.canLaunchAsJUnit" forcePluginActivation="true"/>
+                             </adapt>
+                          </iterate>
+               </with>
+            </enablement>
+         </contextualLaunch>
+         <configurationType
+               id="org.eclipse.jdt.junit.launchconfig">
+         </configurationType>
+         <description
+               description="Run in container"
+               mode="run">
+         </description>   
+
+
+   
+      </shortcut>
+   </extension>
+
+
+  <extension
+       point="org.eclipse.ui.preferencePages">
+    <page
+          name="JICUnit"
+          category="org.eclipse.jdt.ui.preferences.JavaBasePreferencePage"
+          class="org.jicunit.eclipse.preference.MainPreferencePage"
+          id="org.jicunit.eclipse.preference.MainPreferencePage">
+    </page>
+  </extension>
+  <extension
+        id="org.jicunit.eclipse.preference.PreferenceInitializer"
+        name="org.jicunit.eclipse.preference.PreferenceInitializer"
+        point="org.eclipse.core.runtime.preferences">
+        <initializer class="org.jicunit.eclipse.preference.PreferenceInitializer">
+        </initializer>
+  </extension>
+
+   
+
+</plugin>
