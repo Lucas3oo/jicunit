@@ -19,21 +19,21 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Suite;
 
 /**
- * A JUnit runner that delegates the actual execution of the test to be
+ * A JUnit4 runner that delegates the actual execution of the test to be
  * performed in a JEE container. This is done via a HTTP call to the
  * <code>JicUnitServlet</code> via the URL specified in the System property of
  * <code>jicunit.url</code>. Typical the URL should be set to
- * <code> http://localhost:7001/integrationtest-war/TestServlet</code>
+ * <code> http://localhost:7001/my-jicunit-war/tests</code>
  * 
  * <p>
  * When the test is executed locally then this runner will delegate the
  * execution to the runner in the container. However this runner is also
  * instantiated in the container and then this runner will delegate the
  * execution to the default JUnit runner (or the runner specified by the
- * {@link RunInContainerWith}).
+ * {@link RunInContainerWith} annotation).
  * 
  * 
- * @author lucas
+ * @author lucas.persson
  *
  */
 public class JicUnitRunner extends Runner implements Filterable, Sortable {
@@ -125,6 +125,11 @@ public class JicUnitRunner extends Runner implements Filterable, Sortable {
     return null;
   }
 
+  /**
+   * Retrieves the container from the system property {@link JicUnitRunner#CONTAINER_URL}.
+   * 
+   * @return URL pointing to the container
+   */
   protected String getContainerUrl() {
     String containerUrl = System.getProperty(CONTAINER_URL);
     if (containerUrl == null) {

@@ -15,7 +15,7 @@ public class PojoToXmlTest {
     TestDescription testDescription = new TestDescription("theName(TheClass)", "TheClass");
     XmlUtil xmlUtil = new XmlUtil();
     String xml = xmlUtil.convertToXml(testDescription, testDescription.getClass());
-    //System.out.println(xml);
+    System.out.println(xml);
   }
 
   @Test

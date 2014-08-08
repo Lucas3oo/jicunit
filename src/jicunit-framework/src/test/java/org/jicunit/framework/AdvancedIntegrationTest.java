@@ -7,7 +7,6 @@ import static org.junit.Assert.fail;
 import org.jicunit.framework.samples.Junit4CategorySuite;
 import org.jicunit.framework.samples.TestSampleJunit4;
 import org.jicunit.framework.samples.TestSampleJunit4Parameterized;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.Request;
 import org.junit.runner.Result;

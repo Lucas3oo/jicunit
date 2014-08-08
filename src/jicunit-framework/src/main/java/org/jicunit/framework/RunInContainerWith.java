@@ -12,7 +12,7 @@ import org.junit.runner.Runner;
 
 /**
  * When a class is annotated with <code>&#064;RunInContainerWith</code> or extends a class annotated
- * with <code>&#064;RunInContainerWith</code>, JicUnit will invoke the class it references to run the
+ * with <code>&#064;RunInContainerWith</code>, JICUnit will invoke the class it references to run the
  * tests in that class instead of the default runner in JUnit. 
  * <p>
  * The annotation will only be picked up if the class is also {@link RunWith}({@link ParameterizedProxyRunner}.class)
@@ -26,7 +26,7 @@ import org.junit.runner.Runner;
  * }
  * </pre>
  *
- * @author lucas
+ * @author lucas.persson
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

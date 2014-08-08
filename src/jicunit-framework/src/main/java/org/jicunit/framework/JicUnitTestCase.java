@@ -7,10 +7,10 @@ import org.jicunit.framework.internal.JicUnitServletClient;
 import org.w3c.dom.Document;
 
 /**
- * Classes that inherits from this class will have there test executed in the
+ * JUnit3 classes that inherits from this class will have there test executed in the
  * container instead when the system property "jicunit.url" is set
  * 
- * @author lucas
+ * @author lucas.persson
  * 
  */
 public class JicUnitTestCase extends TestCase {
@@ -33,7 +33,7 @@ public class JicUnitTestCase extends TestCase {
    * <p>
    * Both {@link #setUp()} and {@link #tearDown()} will only be run in container.
    * 
-   * @Throws: java.lang.Throwable if any exception is thrown during the test.
+   * @throws java.lang.Throwable if any exception is thrown during the test.
    *          Any exception will be displayed by the JUnit Test Runner
    */
   @Override
@@ -53,7 +53,7 @@ public class JicUnitTestCase extends TestCase {
    * Executes JUnit tests on the server side. It is the equivalent of
    * junit.framework.TestCase.runBare() but run on the server side.
    * 
-   * @Throws: java.lang.Throwable if an error occurred when running the test on
+   * @throws java.lang.Throwable if an error occurred when running the test on
    *          the server side
    */
   private void runBareLocally(String containerUrl) throws Throwable {
