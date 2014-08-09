@@ -6,7 +6,7 @@
   <version>0.0.1</version>
   <name>Java In-Container Unit (JICUnit) Test Framework</name>
   <description>A JUnit based test framework for JEE in-container testing.</description>
-  <url>https://github.com/Lucas3oo/jicunit</url>
+  <url>http://jicunit.org</url>
   <licenses>
     <license>
       <name>MIT License</name>
@@ -15,8 +15,9 @@
     </license>
   </licenses>
   <scm>
+    <connection>scm:git:git@github.com:Lucas3oo/jicunit.git</connection>
+    <developerConnection>scm:git:git@github.com:Lucas3oo/jicunit.git</developerConnection>
     <url>https://github.com/Lucas3oo/jicunit</url>
-    <connection>https://github.com/Lucas3oo/jicunit.git</connection>
   </scm>
   <developers>
     <developer>
@@ -105,34 +106,70 @@
         </configuration>
       </plugin>
 
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.3</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
-        <configuration>
-          <excludePackageNames>org.jicunit.framework.*</excludePackageNames>
-        </configuration>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
 
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.3</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.9.1</version>
+            <configuration>
+              <excludePackageNames>org.jicunit.framework.*</excludePackageNames>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.2</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>false</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+
 </project>

@@ -46,7 +46,7 @@ public class InContainerTestRunner extends RunListener {
   }
 
   private Filter createMethodFilter(final String testClassName, final String testDisplayName) {
-    String testMethod = testDisplayName.substring(0, testDisplayName.indexOf('('));
+    String testMethod = testDisplayName.substring(0, testDisplayName.lastIndexOf('('));
     return Filter.matchMethodDescription(Description.createTestDescription(testClassName,
         testMethod));
   }

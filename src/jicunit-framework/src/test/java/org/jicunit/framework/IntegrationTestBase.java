@@ -80,5 +80,24 @@ public class IntegrationTestBase {
     Result result = sJUnitCore.run(request);
     return result;
   }
+  
+  public Description createDescription(Class<?> testClass) throws ClassNotFoundException {
+    Request request = Request.aClass(testClass);
+    Description description = request.getRunner().getDescription();
+    return description;
+  }  
+  
+  public int countTests(Description description) {
+    int count = 0;
+    if (description.isTest()) {
+      count = 1;
+    }
+    else {
+      for (Description child : description.getChildren()) {
+        count = count + countTests(child);
+      }
+    }
+    return count;
+  }
 
 }

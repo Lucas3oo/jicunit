@@ -72,6 +72,11 @@ public class JicUnitRunner extends Runner implements Filterable, Sortable {
           throw new IllegalArgumentException(RunInContainerWith.class.getSimpleName()
               + " annotation does not support Suite runner or any subclass of Suite except Parameterized");
         }
+        else {
+          Runner runInContainerRunner  = runnerClass.getDeclaredConstructor(Class.class).newInstance(testClass);
+          Description desc = runInContainerRunner.getDescription();
+          mRunner = new BasicProxyRunner(testClass, containerUrl, desc);
+        }
       }
       else {
         mRunner = new BasicProxyRunner(testClass, containerUrl);
@@ -82,7 +87,8 @@ public class JicUnitRunner extends Runner implements Filterable, Sortable {
 
   @Override
   public Description getDescription() {
-    return mRunner.getDescription();
+    Description description =  mRunner.getDescription();
+    return description;
   }
 
   @Override

@@ -8,6 +8,7 @@ import org.jicunit.framework.samples.Junit4CategorySuite;
 import org.jicunit.framework.samples.TestSampleJunit4;
 import org.jicunit.framework.samples.TestSampleJunit4Parameterized;
 import org.junit.Test;
+import org.junit.runner.Description;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
 
@@ -22,8 +23,11 @@ public class AdvancedIntegrationTest extends IntegrationTestBase {
  
   
   @Test
-  public void testParameterized() {
+  public void testParameterized() throws ClassNotFoundException {    
     // this will result in 4 tests being run. The class has two methods and two parameters in the array 2 -> 2*2=4
+    int runCount = countTests(createDescription(TestSampleJunit4Parameterized.class));
+    assertEquals("The number of tests to run", 4, runCount);  
+    
     Result result = runTests(TestSampleJunit4Parameterized.class);
     //System.out.println(result.getFailures());
     assertTrue("The test should succeed", result.wasSuccessful());
