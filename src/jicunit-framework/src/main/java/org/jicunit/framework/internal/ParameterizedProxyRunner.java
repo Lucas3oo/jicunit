@@ -49,7 +49,7 @@ public class ParameterizedProxyRunner extends Parameterized {
     return proxyRunners;
   }
 
-  private class ProxyTestClassRunnerForParameters extends BasicProxyRunner {
+  private static class ProxyTestClassRunnerForParameters extends BasicProxyRunner {
     private String mName;
     public ProxyTestClassRunnerForParameters(Class<?> testClass, String containerUrl,
         String name) throws InitializationError {
