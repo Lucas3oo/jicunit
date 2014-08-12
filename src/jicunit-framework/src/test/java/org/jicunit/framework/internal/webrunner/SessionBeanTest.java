@@ -62,7 +62,7 @@ public class SessionBeanTest {
 
   @Test
   public void testGetSelectedTests() {
-    SessionBean sessionBean = new SessionBean(mApplicationBean, mRunnerBean);
+    TrinidadSessionBean sessionBean = new TrinidadSessionBean(mApplicationBean, mRunnerBean);
     sessionBean.init();
 
     TestDescription testDescription = mApplicationBean.getTestDescription();
@@ -88,7 +88,7 @@ public class SessionBeanTest {
   
   @Test
   public void testRun() {
-    SessionBean sessionBean = new SessionBean(mApplicationBean, mRunnerBean);
+    TrinidadSessionBean sessionBean = new TrinidadSessionBean(mApplicationBean, mRunnerBean);
     sessionBean.init();
     List<TestDescription> selectedTests = sessionBean.getSelectedTests(mSelection);
 

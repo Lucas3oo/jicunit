@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:tr="http://myfaces.apache.org/trinidad">
+
+<!-- all inside tr:document will have the nice skin -->
+<tr:document>
+	<h:head>
+		<title>JICUnit TestRunner</title>
+	</h:head>
+	<h:body>
+		<h1>JICUnit TestRunner</h1>
+
+		<h:form>
+
+      <tr:poll pollInterval="4000" id="pollid"/>
+
+			<tr:treeTable var="test" value="#{tSessionBean.tests}"
+				selectedRowKeys="#{tSessionBean.selectedRowKeySet}"
+				rootNodeRendered="false" initiallyExpanded="false" width="100%"
+				rowSelection="multiple" partialTriggers="::pollid">
+				<f:facet name="actions">
+					<tr:commandButton action="#{tSessionBean.beginRun}" text="Run"
+						shortDesc="Run selected test(s)" />
+					<tr:commandButton action="#{tSessionBean.cancelRun}" text="Cancel"
+						shortDesc="Cancel run of the selected test(s)" />
+					<tr:commandButton action="#{tSessionBean.clearResults}" text="Clear"
+						shortDesc="Clear all results" />
+				</f:facet>
+				<f:facet name="header">
+          &nbsp;&nbsp;|&nbsp;
+          Tests: <tr:outputFormatted value="#{tSessionBean.currentTestCount} &#47; #{tSessionBean.totalTestCount}" />&nbsp;&nbsp;|&nbsp;
+          Errors: <h:outputText value="#{tSessionBean.errorCount}" />&nbsp;&nbsp;|&nbsp; 
+          Failures: <h:outputText value="#{tSessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
+          Ignored: <h:outputText value="#{tSessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
+        </f:facet>
+
+				<f:facet name="nodeStamp">
+					<tr:column>
+						<f:facet name="header">
+							<tr:outputText value="Name" />
+						</f:facet>
+						<tr:outputFormatted value="&lt;b>#{test.displayName}&lt;/b>" />
+					</tr:column>
+				</f:facet>
+				<tr:column>
+					<f:facet name="header">
+						<h:outputText value="Exception" />
+					</f:facet>
+					<tr:showDetail disclosedText="#{test.exceptionDescription.message}"
+						disclosed="false">
+						<pre>
+							<tr:outputText value="#{test.exceptionDescription.stackTrace}"
+								escape="true" />
+						</pre>
+					</tr:showDetail>
+				</tr:column>
+				<tr:column>
+					<f:facet name="header">
+						<h:outputText value="Status" />
+					</f:facet>
+					<h:outputText value="#{test.status}"
+						style="display: block; background-color: #{test.status eq 'OK' ? 'LightGreen' : (test.status eq 'Error' ? 'LightSalmon' : (test.status eq 'Failure' ? 'LightSalmon' : 'white'))}" />
+				</tr:column>
+				<tr:column>
+					<f:facet name="header">
+						<h:outputText value="Time" />
+					</f:facet>
+					<h:outputText value="#{test.timeAsSeconds}">
+						<f:convertNumber />
+					</h:outputText>
+				</tr:column>
+				<tr:column>
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<tr:commandButton action="#{tSessionBean.beginRunSingle}" text="Run"
+						shortDesc="Run single test" />
+				</tr:column>
+
+				<f:facet name="footer">
+          &nbsp;&nbsp;|&nbsp;
+          Tests: <tr:outputFormatted value="#{tSessionBean.currentTestCount} &#47; #{tSessionBean.totalTestCount}" />&nbsp;&nbsp;|&nbsp;
+          Errors: <h:outputText value="#{tSessionBean.errorCount}" />&nbsp;&nbsp;|&nbsp; 
+          Failures: <h:outputText value="#{tSessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
+          Ignored: <h:outputText value="#{tSessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
+        </f:facet>
+
+			</tr:treeTable>
+
+		</h:form>
+
+		<p>
+			<h:outputLink value="http://jicunit.org">jicunit.org</h:outputLink>
+		</p>
+	</h:body>
+</tr:document>
+</html>
+

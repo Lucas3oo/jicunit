@@ -4,100 +4,113 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:tr="http://myfaces.apache.org/trinidad">
+	xmlns:f="http://java.sun.com/jsf/core">
 
 <!-- all inside tr:document will have the nice skin -->
-<tr:document>
-	<h:head>
-		<title>JICUnit TestRunner</title>
-	</h:head>
-	<h:body>
-		<h1>JICUnit TestRunner</h1>
+<!--   <h:outputStylesheet library="css" name="table-style.css" /> -->
+<!--   <h:outputStylesheet library="css" name="#{resource['table-style.css']}" /> -->
+<!-- hej -->
+<h:head>
+	<title>JICUnit TestRunner</title>
+ 
+  <link type="text/css" rel="stylesheet" href="table-style.css"/>
+ 
+</h:head>
+<h:body>
+	<h1>JICUnit TestRunner</h1>
 
-		<h:form>
+	<h:form>
 
-      <tr:poll pollInterval="4000" id="pollid"/>
+		<h:commandButton action="#{jSessionBean.beginRunSelected}" value="Run"
+			shortDesc="Run selected test(s)" />
+    <h:commandButton action="#{jSessionBean.beginRunAll}" value="Run All"
+      shortDesc="Run selected test(s)" />
+		<h:commandButton action="#{jSessionBean.cancelRun}" value="Cancel"
+			shortDesc="Cancel run of the selected test(s)" />
+		<h:commandButton action="#{jSessionBean.clearResults}" value="Clear"
+			shortDesc="Clear all results" />
 
-			<tr:treeTable var="test" value="#{sessionBean.tests}"
-				selectedRowKeys="#{sessionBean.selectedRowKeySet}"
-				rootNodeRendered="false" initiallyExpanded="false" width="100%"
-				rowSelection="multiple" partialTriggers="::pollid">
-				<f:facet name="actions">
-					<tr:commandButton action="#{sessionBean.beginRun}" text="Run"
-						shortDesc="Run selected test(s)" />
-					<tr:commandButton action="#{sessionBean.cancelRun}" text="Cancel"
-						shortDesc="Cancel run of the selected test(s)" />
-					<tr:commandButton action="#{sessionBean.clearResults}" text="Clear"
-						shortDesc="Clear all results" />
-				</f:facet>
+
+		<h:dataTable id="dt1" value="#{jSessionBean.tests}" var="test"
+			styleClass="order-table" headerClass="order-table-header"
+			rowClasses="order-table-odd-row,order-table-even-row" frame="border"
+			rules="all" summary="List of tests.">
+
+			<f:facet name="header">
+          &nbsp;&nbsp;|&nbsp;
+          Tests: <h:outputText
+					value="#{jSessionBean.currentTestCount} &#47; #{jSessionBean.totalTestCount}" />&nbsp;&nbsp;|&nbsp;
+          Errors: <h:outputText value="#{jSessionBean.errorCount}" />&nbsp;&nbsp;|&nbsp; 
+          Failures: <h:outputText value="#{jSessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
+          Ignored: <h:outputText value="#{jSessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
+        </f:facet>
+
+
+			<h:column>
 				<f:facet name="header">
-          &nbsp;&nbsp;|&nbsp;
-          Tests: <tr:outputFormatted value="#{sessionBean.currentTestCount} &#47; #{sessionBean.totalTestCount}" />&nbsp;&nbsp;|&nbsp;
-          Errors: <h:outputText value="#{sessionBean.errorCount}" />&nbsp;&nbsp;|&nbsp; 
-          Failures: <h:outputText value="#{sessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
-          Ignored: <h:outputText value="#{sessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
-        </f:facet>
-
-				<f:facet name="nodeStamp">
-					<tr:column>
-						<f:facet name="header">
-							<tr:outputText value="Name" />
-						</f:facet>
-						<tr:outputFormatted value="&lt;b>#{test.displayName}&lt;/b>" />
-					</tr:column>
+					<h:outputText value="Select" />
 				</f:facet>
-				<tr:column>
-					<f:facet name="header">
-						<h:outputText value="Exception" />
-					</f:facet>
-					<tr:showDetail disclosedText="#{test.exceptionDescription.message}"
-						disclosed="false">
-						<pre>
-							<tr:outputText value="#{test.exceptionDescription.stackTrace}"
-								escape="true" />
-						</pre>
-					</tr:showDetail>
-				</tr:column>
-				<tr:column>
-					<f:facet name="header">
-						<h:outputText value="Status" />
-					</f:facet>
-					<h:outputText value="#{test.status}"
-						style="display: block; background-color: #{test.status eq 'OK' ? 'LightGreen' : (test.status eq 'Error' ? 'LightSalmon' : (test.status eq 'Failure' ? 'LightSalmon' : 'white'))}" />
-				</tr:column>
-				<tr:column>
-					<f:facet name="header">
-						<h:outputText value="Time" />
-					</f:facet>
-					<h:outputText value="#{test.timeAsSeconds}">
-						<f:convertNumber />
-					</h:outputText>
-				</tr:column>
-				<tr:column>
-					<f:facet name="header">
-						<h:outputText value="" />
-					</f:facet>
-					<tr:commandButton action="#{sessionBean.beginRunSingle}" text="Run"
-						shortDesc="Run single test" />
-				</tr:column>
+				<h:selectBooleanCheckbox
+					value="#{jSessionBean.selected[test]}" />
+			</h:column>
 
-				<f:facet name="footer">
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Name" />
+				</f:facet>
+				<h:outputText value="#{test.displayName}" rendered="#{test.suite}"/>
+        <h:outputText value="&nbsp;&nbsp; #{test.displayName}" rendered="#{not test.suite}"/>
+			</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Exception" />
+				</f:facet>
+				<h:outputText value="#{test.exceptionDescription.message}"/>
+			</h:column>
+
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Status" />
+				</f:facet>
+				<h:outputText value="#{test.status}"
+					style="display: block; background-color: #{test.status eq 'OK' ? 'LightGreen' : (test.status eq 'Error' ? 'LightSalmon' : (test.status eq 'Failure' ? 'LightSalmon' : 'white'))}" />
+			</h:column>
+
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Time" />
+				</f:facet>
+				<h:outputText value="#{test.timeAsSeconds}">
+					<f:convertNumber />
+				</h:outputText>
+			</h:column>
+			<h:column>
+				<f:facet name="header">
+					<h:outputText value="Action" />
+				</f:facet>
+				<h:commandButton action="#{jSessionBean.beginRunSingle}" value="Run" />
+			</h:column>
+
+
+			<f:facet name="footer">
           &nbsp;&nbsp;|&nbsp;
-          Tests: <tr:outputFormatted value="#{sessionBean.currentTestCount} &#47; #{sessionBean.totalTestCount}" />&nbsp;&nbsp;|&nbsp;
-          Errors: <h:outputText value="#{sessionBean.errorCount}" />&nbsp;&nbsp;|&nbsp; 
-          Failures: <h:outputText value="#{sessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
-          Ignored: <h:outputText value="#{sessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
+          Tests: <h:outputText
+					value="#{jSessionBean.currentTestCount} &#47; #{jSessionBean.totalTestCount}" />&nbsp;&nbsp;|&nbsp;
+          Errors: <h:outputText value="#{jSessionBean.errorCount}" />&nbsp;&nbsp;|&nbsp; 
+          Failures: <h:outputText value="#{jSessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
+          Ignored: <h:outputText value="#{jSessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
         </f:facet>
 
-			</tr:treeTable>
 
-		</h:form>
+		</h:dataTable>
 
-		<p>
-			<h:outputLink value="http://jicunit.org">jicunit.org</h:outputLink>
-		</p>
-	</h:body>
-</tr:document>
+
+	</h:form>
+
+	<p>
+		<h:outputLink value="http://jicunit.org">jicunit.org</h:outputLink>
+	</p>
+</h:body>
+
 </html>
 

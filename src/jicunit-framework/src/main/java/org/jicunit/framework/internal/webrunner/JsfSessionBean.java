@@ -3,19 +3,18 @@ package org.jicunit.framework.internal.webrunner;
 import java.beans.IntrospectionException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.myfaces.trinidad.model.ChildPropertyTreeModel;
-import org.apache.myfaces.trinidad.model.RowKeySet;
-import org.apache.myfaces.trinidad.model.RowKeySetTreeImpl;
-import org.apache.myfaces.trinidad.model.TreeModel;
 import org.jicunit.framework.internal.model.TestDescription;
 
 /**
@@ -29,20 +28,21 @@ import org.jicunit.framework.internal.model.TestDescription;
  */
 // @ManagedBean(name = "sessionBean")
 // @SessionScoped
-@Named("sessionBean")
+@Named("jSessionBean")
 @SessionScoped
-public class SessionBean implements Serializable {
+public class JsfSessionBean implements RunnerCallback, Serializable {
 
   private static final long serialVersionUID = 1L;
 
   @Inject
   private ApplicationBean mApplicationBean;
-  
+
   @EJB
   private RunnerBean mRunnerBean;
 
-  private TreeModel mTestDescriptionTreeModel;
-  private RowKeySet mSelectedRowKeySet;
+  private DataModel<TestDescription> mDataModel;
+  private Map<TestDescription, Boolean> mSelectedTests = new HashMap<>();
+
   private volatile boolean mRunning = false;
 
   // root of the tree of test suites/classes test methods
@@ -55,11 +55,11 @@ public class SessionBean implements Serializable {
   private volatile int mFailureCount;
   private volatile int mIgnoredCount;
 
-  public SessionBean() {
+  public JsfSessionBean() {
   }
 
   // only for unit test
-  protected SessionBean(ApplicationBean applicationBean, RunnerBean runnerBean) {
+  protected JsfSessionBean(ApplicationBean applicationBean, RunnerBean runnerBean) {
     mApplicationBean = applicationBean;
     mRunnerBean = runnerBean;
   }
@@ -67,14 +67,17 @@ public class SessionBean implements Serializable {
   @PostConstruct
   public void init() {
     mTestDescription = mApplicationBean.getTestDescription();
-    mTestDescriptionTreeModel = new ChildPropertyTreeModel(mTestDescription, "testDescriptions");
-    mSelectedRowKeySet = new RowKeySetTreeImpl();
+
+    List<TestDescription> leafs = new ArrayList<>();
+
+    includeAll(mTestDescription, leafs);
+
+    mDataModel = new ListDataModel<TestDescription>(leafs);
+
   }
-  
-  
+
   public void clearResults() {
     mTestDescription.clearResult();
-
     mTotalTestCount = 0;
     mCurrentTestCount = 0;
     mErrorCount = 0;
@@ -82,15 +85,22 @@ public class SessionBean implements Serializable {
     mIgnoredCount = 0;
   }
 
+  @Override
   public boolean isRunning() {
     return mRunning;
   }
 
-  
-  public void beginRun() {
+  public void beginRunAll() {
     if (!isRunning()) {
       clearResults();
-      run();
+      runAll();
+    }
+  }
+
+  public void beginRunSelected() {
+    if (!isRunning()) {
+      clearResults();
+      runSelected();
     }
   }
 
@@ -100,7 +110,8 @@ public class SessionBean implements Serializable {
       runSingle();
     }
   }
-  
+
+  @Override
   public void endRun() {
     mRunning = false;
   }
@@ -109,18 +120,24 @@ public class SessionBean implements Serializable {
     endRun();
   }
 
+  protected void runAll() {
+    List<TestDescription> selectedTestsIncludedLeafs = new ArrayList<>();
+    includeAllLeafs(mTestDescription, selectedTestsIncludedLeafs);
+    run(selectedTestsIncludedLeafs);
+  }
+
   /**
    * Execute the selected tests
    */
-  protected void run() {
-    List<TestDescription> selectedTests = getSelectedTests(getSelectedRowKeys());
+  protected void runSelected() {
+    List<TestDescription> selectedTests = getSelectedTests();
     List<TestDescription> selectedTestsIncludedLeafs = new ArrayList<>();
     for (TestDescription desc : selectedTests) {
       includeAllLeafs(desc, selectedTestsIncludedLeafs);
     }
     // run all tests in selectedTestsIncludedLeafs
     run(selectedTestsIncludedLeafs);
-    
+
   }
 
   /**
@@ -129,9 +146,8 @@ public class SessionBean implements Serializable {
    */
   protected void runSingle() {
     // get the current clicked row
-    Object rowData = mTestDescriptionTreeModel.getRowData();
-    if (rowData != null && (rowData instanceof TestDescription)) {
-      TestDescription testDescription = (TestDescription) rowData;
+    TestDescription testDescription = mDataModel.getRowData();
+    if (testDescription != null) {
       List<TestDescription> selectedTestsIncludedLeafs = new ArrayList<>();
       includeAllLeafs(testDescription, selectedTestsIncludedLeafs);
       run(selectedTestsIncludedLeafs);
@@ -144,58 +160,19 @@ public class SessionBean implements Serializable {
     mRunnerBean.run(this, selectedTests);
   }
 
-  private List<List<Integer>> getSelectedRowKeys() {
-    List<List<Integer>> selection = new ArrayList<List<Integer>>();
-    Iterator<Object> iterator = mSelectedRowKeySet.iterator();
-    while (iterator.hasNext()) {
-      @SuppressWarnings("unchecked")
-      List<Object> rowKey = (List<Object>) iterator.next();
-      List<Integer> rowKeyAsInt = new ArrayList<>();
-      for (Object seg : rowKey.subList(1, rowKey.size())) {
-        Integer segAsInt = (Integer) seg;
-        rowKeyAsInt.add(segAsInt);
-      }
-      selection.add(rowKeyAsInt);
-    }
-    return selection;
-  }
-
-  /**
-   * 
-   * @param selectedRowKeys
-   *          list of paths in the tree
-   * @return List of TestDescription
-   */
-  protected List<TestDescription> getSelectedTests(List<List<Integer>> selectedRowKeys) {
-    List<TestDescription> list = new ArrayList<>();
-    for (List<Integer> selectedPath : selectedRowKeys) {
-      TestDescription testDescription = getSelectedTest(mTestDescription, selectedPath);
-      if (!list.contains(testDescription)) {
-        list.add(testDescription);
+  private List<TestDescription> getSelectedTests() {
+    List<TestDescription> selectedTests = new ArrayList<>();
+    for (TestDescription testDescription : mDataModel) {
+      if (mSelectedTests.get(testDescription) != null
+          && (mSelectedTests.get(testDescription) == true)) {
+        selectedTests.add(testDescription);
       }
     }
-    return list;
-  }
-
-  /**
-   * 
-   * @param testDescription
-   *          root
-   * @param selectedPath
-   *          points to which node in the tree that shall be included
-   */
-  protected TestDescription getSelectedTest(TestDescription testDescription,
-      List<Integer> selectedPath) {
-    TestDescription selected = testDescription.getTestDescriptions().get(selectedPath.get(0));
-    if (selectedPath.size() == 1) {
-      return selected;
-    } else {
-      return getSelectedTest(selected, selectedPath.subList(1, selectedPath.size()));
-    }
+    return selectedTests;
   }
 
   protected void includeAllLeafs(TestDescription testDescription, List<TestDescription> list) {
-    if (testDescription.getTestDescriptions().size() == 0) {
+    if (!testDescription.isSuite()) {
       if (!list.contains(testDescription)) {
         list.add(testDescription);
       }
@@ -206,30 +183,36 @@ public class SessionBean implements Serializable {
     }
   }
 
+  protected void includeAll(TestDescription testDescription, List<TestDescription> list) {
+    if (!list.contains(testDescription)) {
+      list.add(testDescription);
+    }
+    for (TestDescription child : testDescription.getTestDescriptions()) {
+      includeAll(child, list);
+    }
+  }
+  
   /**
    * 
    * @return the class loader that will be used to run the tests with
    */
-  protected ClassLoader getClassLoader() {
+  @Override
+  public ClassLoader getClassLoader() {
     return Thread.currentThread().getContextClassLoader();
   }
 
-  public TreeModel getTests() throws IntrospectionException {
-    return mTestDescriptionTreeModel;
+  public DataModel<TestDescription> getTests() throws IntrospectionException {
+    return mDataModel;
   }
 
-  public RowKeySet getSelectedRowKeySet() {
-    return mSelectedRowKeySet;
-  }
-
-  public void setSelectedRowKeySet(RowKeySet selectedRowKeySet) {
-    mSelectedRowKeySet = selectedRowKeySet;
+  public Map<TestDescription, Boolean> getSelected() {
+    return mSelectedTests;
   }
 
   public int getCurrentTestCount() {
     return mCurrentTestCount;
   }
-  
+
   public int getTotalTestCount() {
     return mTotalTestCount;
   }
@@ -246,14 +229,12 @@ public class SessionBean implements Serializable {
     return mIgnoredCount;
   }
 
+  @Override
   public void setResult(int currentTestCount, int errorCount, int failureCount, int ignoredCount) {
     mCurrentTestCount = currentTestCount;
     mErrorCount = errorCount;
     mFailureCount = failureCount;
-    mIgnoredCount = ignoredCount;    
+    mIgnoredCount = ignoredCount;
   }
-  
-  
-
 
 }

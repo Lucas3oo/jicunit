@@ -1,13 +1,14 @@
 package org.jicunit.framework.internal.webrunner;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -32,6 +33,8 @@ import org.junit.runner.Request;
 @ApplicationScoped
 public class ApplicationBean implements Serializable  {
 
+  private static Logger sLogger = Logger.getLogger(ApplicationBean.class.getName());
+  
   private static final long serialVersionUID = 1L;
 
   private transient TestDescription mTestDescription;
@@ -41,12 +44,12 @@ public class ApplicationBean implements Serializable  {
   }
   
   @PostConstruct
-  public void init() throws IOException {
+  public void init() {
     List<String> testSuiteNames = loadTestSuitesFromFile();
     loadTestSuites(testSuiteNames);
   }
   
-  protected List<String> loadTestSuitesFromFile() throws IOException {
+  protected List<String> loadTestSuitesFromFile()  {
     List<String> testSuiteNames = new ArrayList<String>();
     final FacesContext facesContext = FacesContext.getCurrentInstance();
     final ExternalContext externalContext = facesContext.getExternalContext();
@@ -57,6 +60,10 @@ public class ApplicationBean implements Serializable  {
       while ((testSuitesName = reader.readLine()) != null) {
         testSuiteNames.add(testSuitesName);
       }      
+    } catch (Exception e) {
+      String msg = "Unable to read the test-suites.txt";
+      sLogger.log(Level.SEVERE, msg, e);
+      throw new RuntimeException(msg, e);
     }
     return testSuiteNames;
   }
@@ -64,7 +71,7 @@ public class ApplicationBean implements Serializable  {
   protected void loadTestSuites(List<String> testSuiteNames) {
     // hack to get around that getRowsByDepth doesn't work on treeTable
     // create a dummy root that will not be displayed
-    Description rootDesc = Description.createSuiteDescription("root", (Annotation[])null);
+    Description rootDesc = Description.createSuiteDescription("all tests", (Annotation[])null);
 
     for (String testSuiteName : testSuiteNames) {
       try {

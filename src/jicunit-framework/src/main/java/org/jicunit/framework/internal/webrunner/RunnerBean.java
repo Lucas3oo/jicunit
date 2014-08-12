@@ -16,8 +16,13 @@ public class RunnerBean {
   }
 
   @Asynchronous
-  public void run(SessionBean sessionBean, List<TestDescription> selectedTests) {
-    ClassLoader classLoader = sessionBean.getClassLoader();
+  public void runAsync(RunnerCallback runnerCallback, List<TestDescription> selectedTests) {
+    run(runnerCallback, selectedTests);
+  }
+  
+  
+  public void run(RunnerCallback runnerCallback, List<TestDescription> selectedTests) {
+    ClassLoader classLoader = runnerCallback.getClassLoader();
 
     int currentTestCount = 0;
     int errorCount = 0;
@@ -25,7 +30,7 @@ public class RunnerBean {
     int ignoredCount = 0;
 
     for (TestDescription desc : selectedTests) {
-      if (sessionBean.isRunning()) {
+      if (runnerCallback.isRunning()) {
         InContainerTestRunner runner = new InContainerTestRunner();
         try {
           runner.runTest(classLoader, desc);
@@ -44,7 +49,7 @@ public class RunnerBean {
             break;
           }
           // report progress
-          sessionBean.setResult(currentTestCount, errorCount, failureCount, ignoredCount);
+          runnerCallback.setResult(currentTestCount, errorCount, failureCount, ignoredCount);
         } catch (ClassNotFoundException e) {
           // should not happen since the class is already loaded once
         }
@@ -53,7 +58,7 @@ public class RunnerBean {
       }
     }
 
-    sessionBean.endRun();
+    runnerCallback.endRun();
 
   }
 

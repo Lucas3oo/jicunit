@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
@@ -45,6 +46,7 @@ public class GenerateTestSuitesList {
     scanner.setExcludes(excludeArray);
     scanner.scan();
     String[] includeFiles = scanner.getIncludedFiles();
+    Arrays.sort(includeFiles);
     
     File file = new File(mOutputDirectory + File.separator + "test-suites.txt");
     FileWriter fileWriter = new FileWriter(file);

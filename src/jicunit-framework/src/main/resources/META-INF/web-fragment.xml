@@ -31,11 +31,11 @@
   </context-param>
   <context-param>
     <param-name>org.apache.myfaces.trinidad.USE_APPLICATION_VIEW_CACHE</param-name>
-    <param-value>false</param-value> <!-- true for production -->
+    <param-value>true</param-value> <!-- true for production -->
   </context-param>
   <context-param>
     <param-name>org.apache.myfaces.trinidad.CHECK_FILE_MODIFICATION</param-name>
-    <param-value>true</param-value> <!-- false for production -->
+    <param-value>false</param-value> <!-- false for production -->
   </context-param>
   <context-param>
     <param-name>org.apache.myfaces.trinidad.CHANGE_PERSISTENCE</param-name>
@@ -47,7 +47,7 @@
   </context-param>
   <context-param>
     <param-name>org.apache.myfaces.trinidad.CLIENT_ID_CACHING</param-name>
-    <param-value>ON</param-value> <!-- ON OFF DEBUG ON for production -->
+    <param-value>ON</param-value> <!-- ON OFF DEBUG, ON for production -->
   </context-param>
   <context-param>
     <param-name>org.apache.myfaces.trinidad.DEBUG_JAVASCRIPT</param-name>
@@ -77,8 +77,9 @@
   <!-- Map these file extensions to *.xhtml files in JSF -->
   <servlet-mapping>
     <servlet-name>Faces Servlet</servlet-name>
-    <url-pattern>/</url-pattern>
+    <url-pattern>*.xhtml</url-pattern>
   </servlet-mapping>
+
 
 
   <servlet>

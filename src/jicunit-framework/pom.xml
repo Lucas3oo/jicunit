@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jicunit</groupId>
   <artifactId>jicunit-framework</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <name>Java In-Container Unit (JICUnit) Test Framework</name>
   <description>A JUnit based test framework for JEE in-container testing.</description>
   <url>http://jicunit.org</url>
