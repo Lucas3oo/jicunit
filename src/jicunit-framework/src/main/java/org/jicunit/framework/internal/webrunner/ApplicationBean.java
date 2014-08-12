@@ -14,7 +14,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.inject.Named;
 
 import org.jicunit.framework.internal.model.TestDescription;
 import org.junit.runner.Description;
@@ -27,9 +26,6 @@ import org.junit.runner.Request;
  * @author lucas
  *
  */
-//@ManagedBean(name = "applicationBean", eager=true)
-//@ApplicationScoped
-@Named("applicationBean")
 @ApplicationScoped
 public class ApplicationBean implements Serializable  {
 
