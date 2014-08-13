@@ -30,7 +30,7 @@ public class TestDescription {
    */
   private String mDisplayName;
   private String mClassName;
-
+  
   private Status mStatus;
   
   private long mStartTime;
@@ -80,6 +80,20 @@ public class TestDescription {
   public void setDisplayName(String displayName) {
     mDisplayName = displayName;
   }
+  
+  /**
+   * Like DisplayName but omitting the class name part
+   */
+  @XmlTransient
+  public String getShortName() {
+    if (mDisplayName.indexOf('(')  != -1) {
+      return mDisplayName.substring(0, mDisplayName.lastIndexOf('('));
+    }
+    else {
+      return mDisplayName;
+    }
+  }
+  
   
   /**
    * @return name of the test class

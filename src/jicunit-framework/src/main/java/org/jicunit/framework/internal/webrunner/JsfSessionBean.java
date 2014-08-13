@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jicunit.framework.internal.model.TestDescription;
+import org.jicunit.framework.internal.model.TestDescription.Status;
 
 /**
  * JSF SessionBean to implement a JUnit runner GUI
@@ -70,7 +71,10 @@ public class JsfSessionBean implements RunnerCallback, Serializable {
 
     List<TestDescription> leafs = new ArrayList<>();
 
-    includeAll(mTestDescription, leafs);
+    // include all except the root test suit
+    for (TestDescription testDescription : mTestDescription.getTestDescriptions()) {
+      includeAll(testDescription, leafs);
+    }
 
     mDataModel = new ListDataModel<TestDescription>(leafs);
 
@@ -227,6 +231,14 @@ public class JsfSessionBean implements RunnerCallback, Serializable {
 
   public int getIgnoredCount() {
     return mIgnoredCount;
+  }
+  
+  public Status getOverallStatus() {
+    return mTestDescription.getStatus();
+  }
+  
+  public Double getOverallTime() {
+    return mTestDescription.getTimeAsSeconds();
   }
 
   @Override

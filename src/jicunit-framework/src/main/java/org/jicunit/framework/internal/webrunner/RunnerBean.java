@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import org.jicunit.framework.internal.InContainerTestRunner;
 import org.jicunit.framework.internal.model.TestDescription;
@@ -16,11 +18,13 @@ public class RunnerBean {
   }
 
   @Asynchronous
+  @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
   public void runAsync(RunnerCallback runnerCallback, List<TestDescription> selectedTests) {
     run(runnerCallback, selectedTests);
   }
   
   
+  @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
   public void run(RunnerCallback runnerCallback, List<TestDescription> selectedTests) {
     ClassLoader classLoader = runnerCallback.getClassLoader();
 

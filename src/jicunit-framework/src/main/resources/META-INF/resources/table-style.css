@@ -20,3 +20,37 @@
   background:none repeat scroll 0 0 #F9F9F9;
   border-top:1px solid #BBBBBB;
 }
+
+.displayName-text {
+    display: block;
+    overflow: auto;
+    width: 480px;
+}
+
+
+.exception-text {
+    display: block;
+    overflow: auto;
+    color: red;
+    max-width: 500px;   
+}
+
+td .status {
+    display: block;
+}
+
+.status.OK {
+    background-color: LightGreen;
+}
+
+.status.Error {
+    background-color: LightSalmon;
+}
+
+.status.Failure {
+    background-color: LightSalmon;
+}
+
+.status.Ignored {
+    background-color: white;
+}

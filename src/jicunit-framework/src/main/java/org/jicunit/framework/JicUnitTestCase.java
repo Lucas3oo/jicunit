@@ -8,7 +8,7 @@ import org.w3c.dom.Document;
 
 /**
  * JUnit3 classes that inherits from this class will have there test executed in the
- * container instead when the system property "jicunit.url" is set
+ * container instead when the system property "jicunit.url" is set.
  * 
  * @author lucas.persson
  * 
