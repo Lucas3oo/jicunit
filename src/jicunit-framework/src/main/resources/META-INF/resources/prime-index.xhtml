@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<h:outputStylesheet library="default" name="css/style.css" />
+  <title>JICUnit Runner</title>
+</h:head>
+<h:body>
+
+	<h:form id="runnerForm">
+		<p:growl id="growl" />
+		
+    <p:commandButton widgetVar="runAllButton" 
+      action="#{pSessionBean.beginRunAll}"
+      value="Run All" title="Run all test(s)"  icon="ui-icon-play"
+      async="true"
+      ajax="true"
+      update="treeTable,growl"
+      />
+
+		<p:commandButton widgetVar="runSelectedButton"
+			action="#{pSessionBean.beginRunSelected}" 
+			value="Run" title="Run selected test(s)" icon="ui-icon-play"
+      async="true"
+      ajax="true"
+      update="treeTable,growl"
+			 />
+		<p:commandButton action="#{pSessionBean.cancelRun}" value="Cancel"
+			title="Cancel run of the test(s)" icon="ui-icon-cancel" 
+			ajax="false"
+			/>
+		<p:commandButton action="#{pSessionBean.clearResults}" value="Clear"
+			title="Clear all results" icon="ui-icon-trash" 
+			ajax="false" 
+			/>
+
+		<p:spacer width="30px" />
+		<p:commandButton value="Expand" icon="ui-icon-folder-open"
+			actionListener="#{pSessionBean.expandAll}"
+			update=":runnerForm:treeTable" />
+		<p:commandButton value="Collapse" icon="ui-icon-folder-collapsed"
+			actionListener="#{pSessionBean.collapseAll}"
+			update=":runnerForm:treeTable" />
+		<p:spacer width="30px" />
+
+    <p:commandButton value="Refresh" title="Updates the status of the tests" icon="ui-icon-refresh"
+      update=":runnerForm:treeTable" />
+		
+
+		<p:treeTable id="treeTable" value="#{pSessionBean.tests}" var="test"
+			selectionMode="multiple" selection="#{pSessionBean.selection}"
+			tableStyleClass="order-table" liveResize="true">
+			<f:facet name="header">
+          &nbsp;&nbsp;|&nbsp;
+          Status: <h:outputText value="#{pSessionBean.overallStatus}" />&nbsp;&nbsp;|&nbsp;
+          Tests: <h:outputText
+					value="#{pSessionBean.currentTestCount} &#47; #{pSessionBean.totalTestCount}" />&nbsp;&nbsp;|&nbsp;
+          Errors: <h:outputText value="#{pSessionBean.errorCount}" />&nbsp;&nbsp;|&nbsp; 
+          Failures: <h:outputText value="#{pSessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
+          Ignored: <h:outputText value="#{pSessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
+          Time: <h:outputText value="#{pSessionBean.overallTime}">
+					<f:convertNumber />
+				</h:outputText>&nbsp;&nbsp;|&nbsp; 
+      </f:facet>
+
+			<p:column headerText="Name">
+        <h:outputText value="#{test.displayName}" styleClass="text displayName" rendered="#{test.suite}" />
+        <h:outputText value="#{test.shortName}" styleClass="text displayName" rendered="#{not test.suite}" />
+			</p:column>
+
+			<p:column headerText="Exception">
+				<h:outputText value="#{test.exceptionDescription.message}"
+					styleClass="text message" />
+
+				<h:outputText value="&lt;pre&gt;" escape="false"
+					rendered="#{test.exceptionDescription.stackTrace ne null}" />
+				<h:outputText value="#{test.exceptionDescription.stackTrace}"
+					escape="true" styleClass="text stackTrace" />
+				<h:outputText value="&lt;/pre&gt;" escape="false"
+					rendered="#{test.exceptionDescription.stackTrace ne null}" />
+
+
+			</p:column>
+			<p:column headerText="Status">
+				<h:outputText value="#{test.status}"
+					styleClass="text status #{test.status}" />
+			</p:column>
+			<p:column headerText="Time">
+				<h:outputText value="#{test.timeAsSeconds}" styleClass="text">
+					<f:convertNumber />
+				</h:outputText>
+			</p:column>
+			<p:column style="width:24px">
+				<p:commandLink action="#{pSessionBean.beginRunSingle}"
+					title="Run the test(s) on the current row"
+					styleClass="ui-icon ui-icon-play" 
+		      async="true"
+		      ajax="true"
+		      update=":runnerForm:treeTable,:runnerForm:growl"
+					>
+					<f:setPropertyActionListener value="#{test}"
+						target="#{pSessionBean.currentRow}" />
+				</p:commandLink>
+			</p:column>
+
+			<f:facet name="footer">
+          &nbsp;&nbsp;|&nbsp;
+          Tests: <h:outputText
+					value="#{pSessionBean.currentTestCount} &#47; #{pSessionBean.totalTestCount}" />&nbsp;&nbsp;|&nbsp;
+          Errors: <h:outputText value="#{pSessionBean.errorCount}" />&nbsp;&nbsp;|&nbsp; 
+          Failures: <h:outputText value="#{pSessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
+          Ignored: <h:outputText value="#{pSessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
+      </f:facet>
+
+		</p:treeTable>
+
+	</h:form>
+
+  <p>
+    <h:graphicImage library="default" name="chucknorris.jpg" rendered="#{pSessionBean.themeChuckNorrisEnabled}"/> 
+    <h:outputText value="#{pSessionBean.fact}" styleClass="ui-widget" rendered="#{pSessionBean.themeChuckNorrisEnabled}"/>
+  </p>
+
+	<p>
+		<h:outputLink value="http://jicunit.org" styleClass="ui-widget">jicunit.org</h:outputLink>
+	</p>
+
+
+
+
+</h:body>
+
+</html>
+

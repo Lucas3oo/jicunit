@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
@@ -26,23 +25,23 @@ import org.junit.runner.Request;
  * @author lucas
  *
  */
-@ApplicationScoped
+//@javax.faces.bean.ManagedBean(name = "applicationBean")
+//@javax.faces.bean.ApplicationScoped
+@javax.enterprise.context.ApplicationScoped
 public class ApplicationBean implements Serializable  {
 
   private static Logger sLogger = Logger.getLogger(ApplicationBean.class.getName());
   
   private static final long serialVersionUID = 1L;
 
-  private transient TestDescription mTestDescription;
+  private List<String> mTestSuiteNames;
   
   public ApplicationBean() {
-
   }
   
   @PostConstruct
   public void init() {
-    List<String> testSuiteNames = loadTestSuitesFromFile();
-    loadTestSuites(testSuiteNames);
+    mTestSuiteNames = loadTestSuitesFromFile();
   }
   
   protected List<String> loadTestSuitesFromFile()  {
@@ -64,12 +63,12 @@ public class ApplicationBean implements Serializable  {
     return testSuiteNames;
   }
 
-  protected void loadTestSuites(List<String> testSuiteNames) {
+  protected TestDescription loadTestSuites() {
     // hack to get around that getRowsByDepth doesn't work on treeTable
     // create a dummy root that will not be displayed
     Description rootDesc = Description.createSuiteDescription("all tests", (Annotation[])null);
 
-    for (String testSuiteName : testSuiteNames) {
+    for (String testSuiteName : mTestSuiteNames) {
       try {
         Description desc = createDescription(testSuiteName);
         rootDesc.addChild(desc);
@@ -78,7 +77,7 @@ public class ApplicationBean implements Serializable  {
       }
     }
     
-    mTestDescription = createTestDescriptionFromDescription(rootDesc);
+    return createTestDescriptionFromDescription(rootDesc);
   }
 
   /**
@@ -97,6 +96,12 @@ public class ApplicationBean implements Serializable  {
   }
   
   
+  /**
+   * 
+   * @param testSuiteName
+   * @return JUnit Description
+   * @throws ClassNotFoundException
+   */
   protected Description createDescription(String testSuiteName) throws ClassNotFoundException {
     ClassLoader classLoader = getClassLoader();
     Class<?> clazz = classLoader.loadClass(testSuiteName);
@@ -115,9 +120,18 @@ public class ApplicationBean implements Serializable  {
   }
   
   
-  public TestDescription getTestDescription() {
-    return mTestDescription;
+  public TestDescription createTestDescription() {
+    return loadTestSuites();
   }
+  
+  public List<String> getTestSuiteNames() {
+    return mTestSuiteNames;
+  }
+  
+  public void setTestSuiteNames(List<String> testSuiteNames) {
+    mTestSuiteNames = testSuiteNames;
+  }
+  
   
   
 }

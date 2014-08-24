@@ -35,5 +35,15 @@ public class SomeBusinessBeanTest {
     int val = mSomeBusinessBean.parseVal("ade");
     assertEquals("Must be same", result, val);
   }
-  
+
+  /**
+   * this test will give error
+   */
+  @Test
+  public void testParseWithRuntimeExceptionError() {
+    int result = 4728;
+    int val = mSomeBusinessBean.parseValRuntimeExeption("ade");
+    assertEquals("Must be same", result, val);
+  }
+ 
 }

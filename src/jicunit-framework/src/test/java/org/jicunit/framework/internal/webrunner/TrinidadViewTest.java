@@ -12,13 +12,15 @@ import org.jicunit.framework.internal.model.TestDescription;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SessionBeanTest {
+public class TrinidadViewTest {
 
   private List<String> mTestSuiteNames = new ArrayList<>();
   private ApplicationBean mApplicationBean;
   private RunnerBean mRunnerBean;
   private Set<String> mExpectedSelectedTests;
   private List<List<Integer>> mSelection;
+  private TestDescription mTestSuites;
+  private SessionBean mSessionBean;
 
   @Before
   public void setUp() {
@@ -28,8 +30,11 @@ public class SessionBeanTest {
     mTestSuiteNames.add("org.jicunit.framework.samples.TestSampleJunit4Category");
     mTestSuiteNames.add("org.jicunit.framework.samples.TestSampleJunit4Parameterized");
     mApplicationBean = new ApplicationBean();
-    mApplicationBean.loadTestSuites(mTestSuiteNames);
+    mApplicationBean.setTestSuiteNames(mTestSuiteNames);
+    mTestSuites = mApplicationBean.loadTestSuites();
     mRunnerBean = new RunnerBean();
+    mSessionBean = new SessionBean(mApplicationBean);
+    mSessionBean.init();
     
 
     mExpectedSelectedTests = new HashSet<>();
@@ -62,17 +67,17 @@ public class SessionBeanTest {
 
   @Test
   public void testGetSelectedTests() {
-    TrinidadSessionBean sessionBean = new TrinidadSessionBean(mApplicationBean, mRunnerBean);
-    sessionBean.init();
+    TrinidadView trinidadView = new TrinidadView(mSessionBean, mRunnerBean);
+    trinidadView.init();
 
-    TestDescription testDescription = mApplicationBean.getTestDescription();
+    TestDescription testDescription = mTestSuites;
     printTestDescription(testDescription, "", 0);
 
-    List<TestDescription> selectedTests = sessionBean.getSelectedTests(mSelection);
+    List<TestDescription> selectedTests = trinidadView.getSelectedTests(mSelection);
 
     List<TestDescription> selectedTestsIncludedLeafs = new ArrayList<TestDescription>();
     for (TestDescription desc : selectedTests) {
-      sessionBean.includeAllLeafs(desc, selectedTestsIncludedLeafs);
+      trinidadView.includeAllLeafs(desc, selectedTestsIncludedLeafs);
     }
     
     // Create Set of test names so it can be compared with the expectedSelectedTests set
@@ -88,15 +93,15 @@ public class SessionBeanTest {
   
   @Test
   public void testRun() {
-    TrinidadSessionBean sessionBean = new TrinidadSessionBean(mApplicationBean, mRunnerBean);
-    sessionBean.init();
-    List<TestDescription> selectedTests = sessionBean.getSelectedTests(mSelection);
+    TrinidadView trinidadView = new TrinidadView(mSessionBean, mRunnerBean);
+    trinidadView.init();
+    List<TestDescription> selectedTests = trinidadView.getSelectedTests(mSelection);
 
     List<TestDescription> selectedTestsIncludedLeafs = new ArrayList<TestDescription>();
     for (TestDescription desc : selectedTests) {
-      sessionBean.includeAllLeafs(desc, selectedTestsIncludedLeafs);
+      trinidadView.includeAllLeafs(desc, selectedTestsIncludedLeafs);
     }
-    sessionBean.run(selectedTestsIncludedLeafs);
+    trinidadView.run(selectedTestsIncludedLeafs);
     
   }
 

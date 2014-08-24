@@ -87,8 +87,9 @@ public class InContainerTestRunner extends RunListener {
   @Override
   public void testFailure(Failure failure) throws Exception {
     Throwable exception = failure.getException();
-    mTestDescription.setExceptionDescription(new ExceptionDescription(failure.getMessage(),
-        exception.getClass().getName(), ExceptionUtil.filterdStackTrace(failure.getTrace())));
+    ExceptionDescription exceptionDescription = new ExceptionDescription(failure.getMessage(),
+        exception.getClass().getName(), ExceptionUtil.filterdStackTrace(failure.getTrace())); 
+    mTestDescription.setExceptionDescription(exceptionDescription);
     
     if (exception instanceof AssertionError) {
       // -> this is a failure

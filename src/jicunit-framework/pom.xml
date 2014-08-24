@@ -69,13 +69,25 @@
       <groupId>org.apache.myfaces.trinidad</groupId>
       <artifactId>trinidad-api</artifactId>
       <version>2.1.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.myfaces.trinidad</groupId>
       <artifactId>trinidad-impl</artifactId>
       <version>2.1.0</version>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.primefaces</groupId>
+      <artifactId>primefaces</artifactId>
+      <version>5.0</version>
+    </dependency>
+<!--     <dependency> -->
+<!--       <groupId>org.openfaces</groupId> -->
+<!--       <artifactId>openfaces</artifactId> -->
+<!--       <version>3.0</version> -->
+<!--       <scope>provided</scope> -->
+<!--     </dependency> -->
 
     <!-- test dependecies -->
     <dependency>
@@ -131,6 +143,7 @@
             <version>2.9.1</version>
             <configuration>
               <excludePackageNames>org.jicunit.framework.*</excludePackageNames>
+              <stylesheet>maven</stylesheet>
             </configuration>
             <executions>
               <execution>

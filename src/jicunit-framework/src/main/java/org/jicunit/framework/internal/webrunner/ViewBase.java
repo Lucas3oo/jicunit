@@ -1,25 +1,19 @@
 package org.jicunit.framework.internal.webrunner;
 
-import java.beans.IntrospectionException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.inject.Inject;
-import javax.inject.Named;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
+import org.jicunit.framework.internal.FactGenerator;
 import org.jicunit.framework.internal.model.TestDescription;
 import org.jicunit.framework.internal.model.TestDescription.Status;
 
 /**
- * JSF SessionBean to implement a JUnit runner GUI
+ * JSF SessionBean base class to implement a JUnit runner GUI
  * 
  * The bean must be passivation capable hence it implements Serializable. This
  * is a WELD requirement.
@@ -27,66 +21,62 @@ import org.jicunit.framework.internal.model.TestDescription.Status;
  * @author lucas
  *
  */
-// @ManagedBean(name = "sessionBean")
-// @SessionScoped
-@Named("jSessionBean")
-@SessionScoped
-public class JsfSessionBean implements RunnerCallback, Serializable {
+public abstract class ViewBase implements RunnerCallback, Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  @Inject
-  private ApplicationBean mApplicationBean;
+  @javax.inject.Inject
+//  @javax.faces.bean.ManagedProperty("#{applicationBean}")
+  protected SessionBean mSessionBean;
 
   @EJB
-  private RunnerBean mRunnerBean;
+  protected RunnerBean mRunnerBean;
 
-  private DataModel<TestDescription> mDataModel;
-  private Map<TestDescription, Boolean> mSelectedTests = new HashMap<>();
 
-  private volatile boolean mRunning = false;
+  protected volatile boolean mRunning = false;
 
   // root of the tree of test suites/classes test methods
-  private TestDescription mTestDescription;
+  protected TestDescription mTestDescription;
 
   // count for last run
-  private volatile int mTotalTestCount;
-  private volatile int mCurrentTestCount;
-  private volatile int mErrorCount;
-  private volatile int mFailureCount;
-  private volatile int mIgnoredCount;
+  protected volatile int mTotalTestCount;
+  protected volatile int mCurrentTestCount;
+  protected volatile int mErrorCount;
+  protected volatile int mFailureCount;
+  protected volatile int mIgnoredCount;
 
-  public JsfSessionBean() {
+  private String mTheme = "default";
+
+  public ViewBase() {
   }
 
   // only for unit test
-  protected JsfSessionBean(ApplicationBean applicationBean, RunnerBean runnerBean) {
-    mApplicationBean = applicationBean;
+  protected ViewBase(SessionBean sessionBean, RunnerBean runnerBean) {
+    mSessionBean = sessionBean;
     mRunnerBean = runnerBean;
   }
 
-  @PostConstruct
   public void init() {
-    mTestDescription = mApplicationBean.getTestDescription();
-
-    List<TestDescription> leafs = new ArrayList<>();
-
-    // include all except the root test suit
-    for (TestDescription testDescription : mTestDescription.getTestDescriptions()) {
-      includeAll(testDescription, leafs);
+    mTestDescription = mSessionBean.getTestDescription();
+    FacesContext facesContext = FacesContext.getCurrentInstance();
+    if (facesContext != null) {
+      String theme = facesContext.getExternalContext().getInitParameter("org.jicunit.framework.theme");
+      if (theme != null) {
+        mTheme = theme;
+      }
     }
-
-    mDataModel = new ListDataModel<TestDescription>(leafs);
-
   }
 
+
   public void clearResults() {
-    mTestDescription.clearResult();
-    mTotalTestCount = 0;
-    mCurrentTestCount = 0;
-    mErrorCount = 0;
-    mFailureCount = 0;
-    mIgnoredCount = 0;
+    if (!isRunning()) {
+      mTestDescription.clearResult();
+      mTotalTestCount = 0;
+      mCurrentTestCount = 0;
+      mErrorCount = 0;
+      mFailureCount = 0;
+      mIgnoredCount = 0;
+    }
   }
 
   @Override
@@ -118,12 +108,25 @@ public class JsfSessionBean implements RunnerCallback, Serializable {
   @Override
   public void endRun() {
     mRunning = false;
+    onComplete();
   }
 
   public void cancelRun() {
     endRun();
   }
-
+  
+  /**
+   * Start running the tests
+   * 
+   * @param selectedTests
+   */
+  protected void run(List<TestDescription> selectedTests) {
+    mRunning = true;
+    mTotalTestCount = selectedTests.size();
+    mRunnerBean.run(this, selectedTests);
+  }
+  
+  
   protected void runAll() {
     List<TestDescription> selectedTestsIncludedLeafs = new ArrayList<>();
     includeAllLeafs(mTestDescription, selectedTestsIncludedLeafs);
@@ -135,13 +138,14 @@ public class JsfSessionBean implements RunnerCallback, Serializable {
    */
   protected void runSelected() {
     List<TestDescription> selectedTests = getSelectedTests();
-    List<TestDescription> selectedTestsIncludedLeafs = new ArrayList<>();
-    for (TestDescription desc : selectedTests) {
-      includeAllLeafs(desc, selectedTestsIncludedLeafs);
+    if (selectedTests != null) {
+      List<TestDescription> selectedTestsIncludedLeafs = new ArrayList<>();
+      for (TestDescription desc : selectedTests) {
+        includeAllLeafs(desc, selectedTestsIncludedLeafs);
+      }
+      // run all tests in selectedTestsIncludedLeafs
+      run(selectedTestsIncludedLeafs);
     }
-    // run all tests in selectedTestsIncludedLeafs
-    run(selectedTestsIncludedLeafs);
-
   }
 
   /**
@@ -150,7 +154,11 @@ public class JsfSessionBean implements RunnerCallback, Serializable {
    */
   protected void runSingle() {
     // get the current clicked row
-    TestDescription testDescription = mDataModel.getRowData();
+    TestDescription testDescription = getCurrentRow();
+    runSingle(testDescription);
+  }
+
+  protected void runSingle(TestDescription testDescription) {
     if (testDescription != null) {
       List<TestDescription> selectedTestsIncludedLeafs = new ArrayList<>();
       includeAllLeafs(testDescription, selectedTestsIncludedLeafs);
@@ -158,22 +166,38 @@ public class JsfSessionBean implements RunnerCallback, Serializable {
     }
   }
 
-  protected void run(List<TestDescription> selectedTests) {
-    mRunning = true;
-    mTotalTestCount = selectedTests.size();
-    mRunnerBean.run(this, selectedTests);
+  
+  public Integer getProgress() {
+    Integer progress = 0;  
+    if (mTotalTestCount > 0) {
+      progress = (mCurrentTestCount*100) / mTotalTestCount;
+    }
+    return progress;
+  }  
+  
+  /**
+   * Called by the progress bar component.
+   * Just post a growl style notification.
+   */
+  public void onComplete() {
+    if (FacesContext.getCurrentInstance() != null) {
+      FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Tests Completed"));
+    }
   }
 
-  private List<TestDescription> getSelectedTests() {
-    List<TestDescription> selectedTests = new ArrayList<>();
-    for (TestDescription testDescription : mDataModel) {
-      if (mSelectedTests.get(testDescription) != null
-          && (mSelectedTests.get(testDescription) == true)) {
-        selectedTests.add(testDescription);
-      }
+  public void onStarted() {
+    if (FacesContext.getCurrentInstance() != null) {
+      FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Tests Started"));
     }
-    return selectedTests;
   }
+  
+  
+  
+  protected abstract TestDescription getCurrentRow();
+
+
+  protected abstract List<TestDescription> getSelectedTests();
+  
 
   protected void includeAllLeafs(TestDescription testDescription, List<TestDescription> list) {
     if (!testDescription.isSuite()) {
@@ -203,14 +227,6 @@ public class JsfSessionBean implements RunnerCallback, Serializable {
   @Override
   public ClassLoader getClassLoader() {
     return Thread.currentThread().getContextClassLoader();
-  }
-
-  public DataModel<TestDescription> getTests() throws IntrospectionException {
-    return mDataModel;
-  }
-
-  public Map<TestDescription, Boolean> getSelected() {
-    return mSelectedTests;
   }
 
   public int getCurrentTestCount() {
@@ -249,4 +265,12 @@ public class JsfSessionBean implements RunnerCallback, Serializable {
     mIgnoredCount = ignoredCount;
   }
 
+  
+  public String getFact() {
+    return new FactGenerator().random();
+  }
+  
+  public boolean isThemeChuckNorrisEnabled() {
+    return (mTheme.equalsIgnoreCase("chucknorris"));
+  }
 }

@@ -11,6 +11,7 @@
 <tr:document>
 	<h:head>
 		<title>JICUnit TestRunner</title>
+    <h:outputStylesheet library="default" name="css/style.css" />
 	</h:head>
 	<h:body>
 		<h1>JICUnit TestRunner</h1>
@@ -24,20 +25,25 @@
 				rootNodeRendered="false" initiallyExpanded="false" width="100%"
 				rowSelection="multiple" partialTriggers="::pollid">
 				<f:facet name="actions">
-					<tr:commandButton action="#{tSessionBean.beginRun}" text="Run"
+					<tr:commandButton action="#{tSessionBean.beginRunSelected}" text="Run"
 						shortDesc="Run selected test(s)" />
 					<tr:commandButton action="#{tSessionBean.cancelRun}" text="Cancel"
-						shortDesc="Cancel run of the selected test(s)" />
+						shortDesc="Cancel run of the test(s)" />
 					<tr:commandButton action="#{tSessionBean.clearResults}" text="Clear"
 						shortDesc="Clear all results" />
 				</f:facet>
-				<f:facet name="header">
-          &nbsp;&nbsp;|&nbsp;
-          Tests: <tr:outputFormatted value="#{tSessionBean.currentTestCount} &#47; #{tSessionBean.totalTestCount}" />&nbsp;&nbsp;|&nbsp;
-          Errors: <h:outputText value="#{tSessionBean.errorCount}" />&nbsp;&nbsp;|&nbsp; 
-          Failures: <h:outputText value="#{tSessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
-          Ignored: <h:outputText value="#{tSessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
-        </f:facet>
+				
+	      <f:facet name="header">
+	          &nbsp;&nbsp;|&nbsp;
+	          Status: <h:outputText
+	          value="#{tSessionBean.overallStatus}"/>&nbsp;&nbsp;|&nbsp;
+	          Tests: <h:outputText
+	          value="#{tSessionBean.currentTestCount} &#47; #{tSessionBean.totalTestCount}" />&nbsp;&nbsp;|&nbsp;
+	          Errors: <h:outputText value="#{tSessionBean.errorCount}" />&nbsp;&nbsp;|&nbsp; 
+	          Failures: <h:outputText value="#{tSessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
+	          Ignored: <h:outputText value="#{tSessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
+	          Time: <h:outputText value="#{tSessionBean.overallTime}" ><f:convertNumber /></h:outputText>&nbsp;&nbsp;|&nbsp; 
+	      </f:facet>
 
 				<f:facet name="nodeStamp">
 					<tr:column>
@@ -63,8 +69,8 @@
 					<f:facet name="header">
 						<h:outputText value="Status" />
 					</f:facet>
-					<h:outputText value="#{test.status}"
-						style="display: block; background-color: #{test.status eq 'OK' ? 'LightGreen' : (test.status eq 'Error' ? 'LightSalmon' : (test.status eq 'Failure' ? 'LightSalmon' : 'white'))}" />
+	        <h:outputText value="#{test.status}"
+	          styleClass="status #{test.status}" />
 				</tr:column>
 				<tr:column>
 					<f:facet name="header">
@@ -82,13 +88,17 @@
 						shortDesc="Run single test" />
 				</tr:column>
 
-				<f:facet name="footer">
-          &nbsp;&nbsp;|&nbsp;
-          Tests: <tr:outputFormatted value="#{tSessionBean.currentTestCount} &#47; #{tSessionBean.totalTestCount}" />&nbsp;&nbsp;|&nbsp;
-          Errors: <h:outputText value="#{tSessionBean.errorCount}" />&nbsp;&nbsp;|&nbsp; 
-          Failures: <h:outputText value="#{tSessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
-          Ignored: <h:outputText value="#{tSessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
-        </f:facet>
+	      <f:facet name="footer">
+	          &nbsp;&nbsp;|&nbsp;
+	          Status: <h:outputText
+	          value="#{tSessionBean.overallStatus}"/>&nbsp;&nbsp;|&nbsp;
+	          Tests: <h:outputText
+	          value="#{tSessionBean.currentTestCount} &#47; #{tSessionBean.totalTestCount}" />&nbsp;&nbsp;|&nbsp;
+	          Errors: <h:outputText value="#{tSessionBean.errorCount}" />&nbsp;&nbsp;|&nbsp; 
+	          Failures: <h:outputText value="#{tSessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
+	          Ignored: <h:outputText value="#{tSessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
+	          Time: <h:outputText value="#{tSessionBean.overallTime}" ><f:convertNumber /></h:outputText>&nbsp;&nbsp;|&nbsp; 
+	      </f:facet>
 
 			</tr:treeTable>
 

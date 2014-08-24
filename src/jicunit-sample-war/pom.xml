@@ -3,13 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jicunit</groupId>
   <artifactId>jicunit-sample-war</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.4</version>
   <name>jicunit-sample-war</name>
   <description>Sample WAR for Java In-container Unit (JICUnit). </description>
   <packaging>war</packaging>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jicunit.version>0.0.4</jicunit.version>
   </properties>
 
   <dependencies>
@@ -20,7 +21,7 @@
     <dependency>
       <groupId>org.jicunit</groupId>
       <artifactId>jicunit-framework</artifactId>
-      <version>0.0.1</version>
+      <version>${jicunit.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -29,7 +30,12 @@
       <version>4.11</version>
       <scope>compile</scope>
     </dependency>
-
+    <dependency>
+      <groupId>pl.pragmatists</groupId>
+      <artifactId>JUnitParams</artifactId>
+      <version>1.0.3</version>
+      <scope>compile</scope>
+    </dependency>
 
           
   </dependencies>
@@ -58,7 +64,7 @@
       <plugin>
         <groupId>org.jicunit</groupId>
         <artifactId>jicunit-maven-plugin</artifactId>
-        <version>0.0.1</version>
+        <version>${jicunit.version}</version>
         <executions>
           <execution>
             <id>jicunit-enabling-war</id>
@@ -149,7 +155,7 @@
                 <include>**/*Suite.java</include>
               </includes>
               <systemPropertyVariables>
-                <jicunit.url>http://localhost:7001/jicunit-sample-war-0.0.1/tests</jicunit.url>
+                <jicunit.url>http://localhost:7001/jicunit-sample-war-${project.version}/tests</jicunit.url>
               </systemPropertyVariables>
               <forkedProcessTimeoutInSeconds>7200</forkedProcessTimeoutInSeconds>
             </configuration>

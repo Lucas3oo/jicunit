@@ -6,14 +6,11 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core">
 
-<!-- all inside tr:document will have the nice skin -->
-<!--   <h:outputStylesheet library="css" name="table-style.css" /> -->
-<!--   <h:outputStylesheet library="css" name="#{resource['table-style.css']}" /> -->
-<!-- hej -->
+
 <h:head>
 	<title>JICUnit TestRunner</title>
-
-	<link type="text/css" rel="stylesheet" href="table-style.css" />
+	
+	<h:outputStylesheet library="default" name="css/style.css" />
 
 </h:head>
 <h:body>
@@ -24,9 +21,9 @@
 		<h:commandButton action="#{jSessionBean.beginRunSelected}" value="Run"
 			title="Run selected test(s)" />
 		<h:commandButton action="#{jSessionBean.beginRunAll}" value="Run All"
-			title="Run selected test(s)" />
+			title="Run all test(s)" />
 		<h:commandButton action="#{jSessionBean.cancelRun}" value="Cancel"
-			title="Cancel run of the selected test(s)" />
+			title="Cancel run of the test(s)" />
 		<h:commandButton action="#{jSessionBean.clearResults}" value="Clear"
 			title="Clear all results" />
 
@@ -47,7 +44,7 @@
           Failures: <h:outputText value="#{jSessionBean.failureCount}" />&nbsp;&nbsp;|&nbsp; 
           Ignored: <h:outputText value="#{jSessionBean.ignoredCount}" />&nbsp;&nbsp;|&nbsp; 
           Time: <h:outputText value="#{jSessionBean.overallTime}" ><f:convertNumber /></h:outputText>&nbsp;&nbsp;|&nbsp; 
-        </f:facet>
+      </f:facet>
 
 
 			<h:column>
@@ -69,8 +66,8 @@
 				<f:facet name="header">
 					<h:outputText value="Name" />
 				</f:facet>
-				<h:outputText value="#{test.displayName}" styleClass="displayName-text" rendered="#{test.suite}" />
-				<h:outputText value="&nbsp;&nbsp; #{test.shortName}" styleClass="displayName-text" 
+				<h:outputText value="#{test.displayName}" styleClass="text displayName" rendered="#{test.suite}" />
+				<h:outputText value="&nbsp;&nbsp; #{test.shortName}" styleClass="text displayName" 
 					rendered="#{not test.suite}" />
 			</h:column>
 
@@ -84,7 +81,7 @@
 				<h:outputText value="&lt;pre&gt;" escape="false"
 					rendered="#{test.exceptionDescription.stackTrace ne null}" />
 				<h:outputText value="#{test.exceptionDescription.stackTrace}"
-					escape="true" styleClass="exception-text"/>
+					escape="true" styleClass="text stackTrace"/>
 				<h:outputText value="&lt;/pre&gt;" escape="false"
 					rendered="#{test.exceptionDescription.stackTrace ne null}" />
 			</h:column>
@@ -95,14 +92,14 @@
 					<h:outputText value="Status" />
 				</f:facet>
 				<h:outputText value="#{test.status}"
-					styleClass="status #{test.status}" />
+					styleClass="text status #{test.status}" />
 			</h:column>
 
 			<h:column>
 				<f:facet name="header">
 					<h:outputText value="Time" />
 				</f:facet>
-				<h:outputText value="#{test.timeAsSeconds}">
+				<h:outputText value="#{test.timeAsSeconds}" styleClass="text">
 					<f:convertNumber />
 				</h:outputText>
 			</h:column>

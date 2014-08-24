@@ -63,7 +63,15 @@ public class TestSampleJunit4 {
   @Test
   public void testDoSomethingLongRunning() throws Exception {
     System.out.println("hello world JUnit4"  + " using thread " + Thread.currentThread().getName());
-    Thread.sleep(5 * 1000);
+    Thread.sleep(2 * 1000);
+    System.out.println("hello world JUnit4"  + " using thread " + Thread.currentThread().getName() + " Done!");
+  }
+
+  @Category(PositiveTestCategory.class)
+  @Test
+  public void testDoSomethingLongerRunning() throws Exception {
+    System.out.println("hello world JUnit4"  + " using thread " + Thread.currentThread().getName());
+    Thread.sleep(4 * 1000);
     System.out.println("hello world JUnit4"  + " using thread " + Thread.currentThread().getName() + " Done!");
   }
 

@@ -8,7 +8,11 @@
     This is a simple web application of how to use JICUnit
   </description>
 
-
+  <context-param>
+    <description>Enable Chuck Norris the programmer</description>
+    <param-name>org.jicunit.framework.theme</param-name>
+    <param-value>chucknorris</param-value>
+  </context-param>
 
 
   <absolute-ordering>

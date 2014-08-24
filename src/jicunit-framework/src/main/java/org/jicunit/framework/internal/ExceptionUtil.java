@@ -40,19 +40,31 @@ public class ExceptionUtil {
    * @return filtered stackTrace
    */
   public static String filterdStackTrace(String stackTrace) {
+    boolean skip = false;
     StringBuilder filteredStackTrace = new StringBuilder();
     // read line by line until the reflective call to the test method is found
     String[] segments = stackTrace.split("\n");
     for (int i = 0; i < segments.length; i++) {
       String segment = segments[i];
-      if (segment.startsWith("\tat sun.reflect.NativeMethodAccessorImpl")) {
-        break;
-      }
-      else if (segment.startsWith("\tat org.junit.") || segment.startsWith("\tat junit.framework.")) {
-        // skipp
+      
+      if (skip) {
+        // check if Cause by appears then stop skip
+        if (segment.startsWith("Caused by:")) {
+          skip = false;
+          filteredStackTrace.append(segment).append("\n");
+        }
       }
       else {
-        filteredStackTrace.append(segment).append("\n");
+        if (segment.startsWith("\tat sun.reflect.NativeMethodAccessorImpl")) {
+          // skip all lines until Caused by appears
+          skip = true;
+        }
+        else if (segment.startsWith("\tat org.junit.") || segment.startsWith("\tat junit.framework.")) {
+          // skip
+        }
+        else {
+          filteredStackTrace.append(segment).append("\n");
+        }
       }
     }
     // remove last newline

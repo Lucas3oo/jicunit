@@ -1,5 +1,6 @@
 .order-table{   
   border-collapse:collapse;
+  width: 100%
 }
  
 .order-table-header{
@@ -21,36 +22,54 @@
   border-top:1px solid #BBBBBB;
 }
 
-.displayName-text {
-    display: block;
-    overflow: auto;
-    width: 480px;
+
+.ui-widget {
+    font-size: 80%;
+ }
+.ui-widget .ui-widget {
+    font-size: 100%;
+ }
+ 
+.text {
+    font-size: 100%;
 }
 
-
-.exception-text {
+.text.displayName {
     display: block;
+    overflow: auto;
+}
+
+.text.message {
+    display: block;
+    overflow: auto;
+    max-width: 500px;   
+}
+
+.text.stackTrace {
+	  display: block;
     overflow: auto;
     color: red;
     max-width: 500px;   
 }
 
-td .status {
-    display: block;
+
+.text.status {
+	  display: block;
 }
 
-.status.OK {
+.text.status.OK {
     background-color: LightGreen;
 }
 
-.status.Error {
+.text.status.Error {
     background-color: LightSalmon;
 }
 
-.status.Failure {
+.text.status.Failure {
     background-color: LightSalmon;
 }
 
-.status.Ignored {
+.text.status.Ignored {
     background-color: white;
 }
+
