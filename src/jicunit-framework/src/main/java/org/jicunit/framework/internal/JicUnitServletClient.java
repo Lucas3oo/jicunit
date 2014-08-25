@@ -1,6 +1,11 @@
 package org.jicunit.framework.internal;
 
+import static org.jicunit.framework.internal.JicUnitServlet.TEST_CLASS_NAME_PARAM;
+import static org.jicunit.framework.internal.JicUnitServlet.TEST_NAME_PARAM;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URLEncoder;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -14,9 +19,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import static org.jicunit.framework.internal.JicUnitServlet.TEST_CLASS_NAME_PARAM;
-import static org.jicunit.framework.internal.JicUnitServlet.TEST_NAME_PARAM;
 
 /**
  * This class does the actual call to the servlet.
@@ -49,8 +51,12 @@ public class JicUnitServletClient {
       builder = factory.newDocumentBuilder();
       Document document = builder.parse(url);
       return document;
+    } catch (FileNotFoundException fe) {
+      throw new RuntimeException("Could not find the test WAR at the server. Make sure jicunit.url points to the correct context root.", fe);
+    } catch (ConnectException ce) {
+      throw new RuntimeException("Could not connect to the server. Make sure jicunit.url points to the correct host and port.", ce);
     } catch (ParserConfigurationException | SAXException | IOException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Could not run the test. Check the jicunit.url so it is correct.", e); 
     }
   }
 

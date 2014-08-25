@@ -122,7 +122,7 @@
 
   <!-- Welcome page -->
   <welcome-file-list>
-    <welcome-file>index.xhtml</welcome-file>
+    <welcome-file>prime-index.xhtml</welcome-file>
   </welcome-file-list>
 
 </web-fragment>

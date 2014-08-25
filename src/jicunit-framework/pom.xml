@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jicunit</groupId>
   <artifactId>jicunit-framework</artifactId>
-  <version>0.0.4</version>
+  <version>0.1.0</version>
   <name>Java In-Container Unit (JICUnit) Test Framework</name>
   <description>A JUnit based test framework for JEE in-container testing.</description>
   <url>http://jicunit.org</url>
@@ -82,13 +82,6 @@
       <artifactId>primefaces</artifactId>
       <version>5.0</version>
     </dependency>
-<!--     <dependency> -->
-<!--       <groupId>org.openfaces</groupId> -->
-<!--       <artifactId>openfaces</artifactId> -->
-<!--       <version>3.0</version> -->
-<!--       <scope>provided</scope> -->
-<!--     </dependency> -->
-
     <!-- test dependecies -->
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
