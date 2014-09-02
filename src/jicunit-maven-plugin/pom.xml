@@ -5,7 +5,7 @@
 
   <groupId>org.jicunit</groupId>
   <artifactId>jicunit-maven-plugin</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <name>Maven plugin for Java In-Container Unit (JICUnit) Test Framework</name>
   <description>
     Maven plugin that generates additional files needed for the in-container tests 

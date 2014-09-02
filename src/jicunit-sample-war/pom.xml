@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jicunit</groupId>
   <artifactId>jicunit-sample-war</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <name>jicunit-sample-war</name>
   <description>Sample WAR for Java In-container Unit (JICUnit). </description>
   <packaging>war</packaging>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jicunit.version>0.1.0</jicunit.version>
+    <jicunit.version>0.1.1</jicunit.version>
   </properties>
 
   <dependencies>

@@ -1,7 +1,10 @@
 package org.jicunit.framework;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jicunit.framework.internal.BasicProxyRunner;
 import org.jicunit.framework.internal.ContainerUrlHolder;
@@ -17,6 +20,7 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.JUnit4;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Suite;
+import org.junit.runners.model.InitializationError;
 
 /**
  * A JUnit4 runner that delegates the actual execution of the test to be
@@ -39,7 +43,9 @@ import org.junit.runners.Suite;
 public class JicUnitRunner extends Runner implements Filterable, Sortable {
 
   public static final String CONTAINER_URL = "jicunit.url";
-
+  
+  private static Logger sLog = Logger.getLogger(JicUnitRunner.class.getName());
+ 
   private Runner mRunner;
 
   public JicUnitRunner(Class<?> testClass) throws Throwable {
@@ -55,10 +61,19 @@ public class JicUnitRunner extends Runner implements Filterable, Sortable {
         runnerClass = JUnit4.class;
       }
       try {
-        mRunner = runnerClass.getDeclaredConstructor(Class.class).newInstance(testClass);
+        Constructor<? extends Runner> constructor = runnerClass
+            .getDeclaredConstructor(Class.class);
+        mRunner = constructor.newInstance(testClass);
       } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
           | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-        throw new RuntimeException("Unable to create instanceof " + runnerClass, e);
+        Throwable cause = (e.getCause() != null ? e.getCause() : e);
+        String msg = "Unable to create instance of " + runnerClass + " using test class " + testClass.getName() + " Reason: " + cause;
+        if (cause instanceof InitializationError) {
+          InitializationError initializationError = (InitializationError) cause;
+          msg = msg + " " + initializationError.getCauses();
+        }
+        sLog.log(Level.SEVERE, msg);
+        throw new RuntimeException(msg, cause);
       }
     } else {
       // this code is executed locally so create a ProxyRunner which will
@@ -67,18 +82,17 @@ public class JicUnitRunner extends Runner implements Filterable, Sortable {
         runnerClass = runInContainerWith.value();
         if (Parameterized.class.isAssignableFrom(runnerClass)) {
           mRunner = new ParameterizedProxyRunner(testClass, containerUrl);
-        }
-        else if (Suite.class.isAssignableFrom(runnerClass)) {
-          throw new IllegalArgumentException(RunInContainerWith.class.getSimpleName()
-              + " annotation does not support Suite runner or any subclass of Suite except Parameterized");
-        }
-        else {
-          Runner runInContainerRunner  = runnerClass.getDeclaredConstructor(Class.class).newInstance(testClass);
+        } else if (Suite.class.isAssignableFrom(runnerClass)) {
+          throw new IllegalArgumentException(
+              RunInContainerWith.class.getSimpleName()
+                  + " annotation does not support Suite runner or any subclass of Suite except Parameterized");
+        } else {
+          Runner runInContainerRunner = runnerClass.getDeclaredConstructor(Class.class)
+              .newInstance(testClass);
           Description desc = runInContainerRunner.getDescription();
           mRunner = new BasicProxyRunner(testClass, containerUrl, desc);
         }
-      }
-      else {
+      } else {
         mRunner = new BasicProxyRunner(testClass, containerUrl);
       }
     }
@@ -87,7 +101,7 @@ public class JicUnitRunner extends Runner implements Filterable, Sortable {
 
   @Override
   public Description getDescription() {
-    Description description =  mRunner.getDescription();
+    Description description = mRunner.getDescription();
     return description;
   }
 
@@ -132,7 +146,8 @@ public class JicUnitRunner extends Runner implements Filterable, Sortable {
   }
 
   /**
-   * Retrieves the container from the system property {@link JicUnitRunner#CONTAINER_URL}.
+   * Retrieves the container from the system property
+   * {@link JicUnitRunner#CONTAINER_URL}.
    * 
    * @return URL pointing to the container
    */
