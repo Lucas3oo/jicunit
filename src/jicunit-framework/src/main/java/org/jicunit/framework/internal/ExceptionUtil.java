@@ -13,7 +13,7 @@ public class ExceptionUtil {
     List<StackTraceElement> elements;
     List<StackTraceElement> allElements = new ArrayList<StackTraceElement>();
     List<StackTraceElement> causedByElements = new ArrayList<StackTraceElement>();
-    String[] segments = stackTrace.split("\n");
+    String[] segments = stackTrace.split(System.lineSeparator());
     elements = allElements;
     for (int i = 1; i < segments.length; i++) {
       String segment = segments[i];
@@ -45,7 +45,11 @@ public class ExceptionUtil {
       String fileName = tup[1];
       int lineNumber = -1;
       if (tup.length > 2) {
-        lineNumber = Integer.parseInt(tup[2]);
+        try {
+          lineNumber = Integer.parseInt(tup[2]);
+        } catch (NumberFormatException e) {
+          // some funny stacktrace line -> use lineNumber = -1
+        }
       }
       StackTraceElement stackTraceElement = new StackTraceElement(declaringClass, methodName, fileName, lineNumber);
       return stackTraceElement;

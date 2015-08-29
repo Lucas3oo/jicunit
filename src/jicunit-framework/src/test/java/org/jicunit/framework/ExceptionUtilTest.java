@@ -17,15 +17,19 @@ public class ExceptionUtilTest {
       + "\tat com.example.jicunit.sample.SomeBusinessBean.parseValRuntimeExeption(SomeBusinessBean.java:20)\n"
       + "\tat com.example.jicunit.sample.SomeBusinessBeanTest.testParseWithRuntimeExceptionError(SomeBusinessBeanTest.java:45)\n"
       + "Caused by: java.lang.NumberFormatException: For input string: \"ade\"\n"
-      + "\tat java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)\n"
-      + "\tat java.lang.Integer.parseInt(Integer.java:580)\n"
+      + "\tat java.lang.NumberFormatException.forInputString(NumberFormatException.java)\n"
+      + "\tat java.lang.Integer.parseInt(Unknown Source)\n"
+      + "\tat java.lang.Integer.parseInt(Native Method)\n"
+      + "\tat java.lang.Integer.parseInt(Integer.java:??)\n"
       + "\tat java.lang.Integer.parseInt(Integer.java:615)\n"
       + "\tat com.example.jicunit.sample.SomeBusinessBean.parseValRuntimeExeption(SomeBusinessBean.java:17)\n"
       + "\t... 49 more\n";
 
   private String[] mExpectedElements = {
-      "java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)",
-      "java.lang.Integer.parseInt(Integer.java:580)",
+      "java.lang.NumberFormatException.forInputString(NumberFormatException.java)",
+      "java.lang.Integer.parseInt(Unknown Source)",
+      "java.lang.Integer.parseInt(Native Method)",
+      "java.lang.Integer.parseInt(Integer.java)",
       "java.lang.Integer.parseInt(Integer.java:615)",
       "com.example.jicunit.sample.SomeBusinessBean.parseValRuntimeExeption(SomeBusinessBean.java:17)",
       "com.example.jicunit.sample.SomeBusinessBeanTest.testParseWithRuntimeExceptionError(SomeBusinessBeanTest.java:45)" };
